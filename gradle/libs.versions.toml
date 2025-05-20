@@ -1,12 +1,13 @@
 [versions]
-agp = "8.6.0"
+agp = "8.6.1"
 alignment = "1.9.7"
 coilCompose = "2.7.0"
 converterGson = "2.11.0"
+datastoreCoreAndroid = "1.1.1"
 glide = "5.0.0-rc01"
-gson = "2.10.1"
+gson = "2.11.0"
 javaxInject = "1"
-jetbrainsKotlinxCoroutinesAndroid = "1.6.4"
+jetbrainsKotlinxCoroutinesAndroid = "1.9.0"
 koinAndroid = "4.0.0"
 koinAndroidxCompose = "4.0.0"
 koinCore = "4.0.0"
@@ -16,21 +17,26 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 kotlinParcelizeRuntime = "2.0.21"
-kotlinxCoroutinesAndroid = "1.8.1"
-lifecycleRuntimeKtx = "2.8.6"
+kotlinxCoroutinesAndroid = "1.9.0"
+lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
-composeBom = "2024.04.01"
-lifecycleRuntimeKtxVersion = "2.5.1"
+composeBom = "2024.10.01"
+lifecycleRuntimeKtxVersion = "2.8.7"
 lifecycleViewmodelCompose = "2.8.7"
-material = "1.7.4"
+material = "1.7.5"
 navigationCompose = "2.8.3"
 retrofit = "2.11.0"
-ui = "1.7.4"
-uiTooling = "1.7.4"
+roomRuntime = "2.6.1"
+ui = "1.7.5"
+uiTooling = "1.7.5"
 
 [libraries]
 alignment = { module = "org.biojava:alignment", version.ref = "alignment" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-datastore-core-android = { module = "androidx.datastore:datastore-core-android", version.ref = "datastoreCoreAndroid" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastoreCoreAndroid" }
+androidx-datastore-preferences-rxjava2 = { module = "androidx.datastore:datastore-preferences-rxjava2", version.ref = "datastoreCoreAndroid" }
+androidx-datastore-preferences-rxjava3 = { module = "androidx.datastore:datastore-preferences-rxjava3", version.ref = "datastoreCoreAndroid" }
 androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycleRuntimeKtxVersion" }
 androidx-lifecycle-runtime-ktx-v251 = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtxVersion" }
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycleRuntimeKtx" }
@@ -39,6 +45,14 @@ androidx-lifecycle-viewmodel-compose-v287 = { module = "androidx.lifecycle:lifec
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleRuntimeKtxVersion" }
 androidx-material = { module = "androidx.compose.material:material", version.ref = "material" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
+androidx-room-guava = { module = "androidx.room:room-guava", version.ref = "roomRuntime" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }
+androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "roomRuntime" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+androidx-room-rxjava2 = { module = "androidx.room:room-rxjava2", version.ref = "roomRuntime" }
+androidx-room-rxjava3 = { module = "androidx.room:room-rxjava3", version.ref = "roomRuntime" }
+androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "roomRuntime" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
@@ -71,4 +85,5 @@ ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+android-library = { id = "com.android.library", version.ref = "agp" }
 

@@ -5,7 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigation
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -22,10 +24,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.movies.model.Movie
 import com.example.movies.model.MovieViewModel
+import com.example.movies.screens.FavoriteScreen
 import com.example.movies.screens.HomeScreen
 import com.example.movies.screens.ReviewMovieScreen
 import com.example.movies.screens.ListScreen
 import com.example.movies.screens.SettingsScreen
+import com.example.movies.utils.LocalUtils.isFilter
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
@@ -42,7 +46,7 @@ class MainActivity : ComponentActivity() {
 fun MainScreen() {
     val navController = rememberNavController()
     var currentDestination by remember { mutableStateOf("movies") }
-    val viewModel = koinViewModel<MovieViewModel>()
+    val viewModel: MovieViewModel = koinViewModel<MovieViewModel>()
     val state = viewModel.viewState
     viewModel.viewState.error?.let {
         Text(text = it)
@@ -65,13 +69,9 @@ fun MainScreen() {
                 }
             }
             composable("movie_detail/{movieId}") { backStackEntry ->
-                backStackEntry.arguments?.getString("movieId")?.toLong() ?: 0
-                currentDestination = "movie_detail"
-                val id = backStackEntry.arguments?.getString("movieId")?.toLong()?: 0L
+                val id = backStackEntry.arguments?.getString("movieId")?.toLong() ?: 0L
+                val movie: Movie? = viewModel.getMovieById(id)
 
-                val movie: Movie? = id.let {
-                    state.items.find { it.id == id }
-                }
                 if (movie != null) {
                     ReviewMovieScreen(movie = movie, navController = navController)
                 }
@@ -85,7 +85,10 @@ fun MainScreen() {
                 currentDestination = "settings"
                 SettingsScreen()
             }
-
+            composable("favorites"){
+                currentDestination = "favorites"
+                FavoriteScreen(navController)
+            }
         }
     }
 }
@@ -99,12 +102,23 @@ fun BottomNavigationBar(navController: NavController, currentDestination: String
         val items = listOf(
             BottomNavItem("Home", "home", R.drawable.home),
             BottomNavItem("Movies", "movies", R.drawable.list),
-            BottomNavItem("Settings", "settings", R.drawable.settings)
+            BottomNavItem("favorites", "favorites", R.drawable.favorite),
+            BottomNavItem("Settings", "settings", R.drawable.settings),
         )
 
         items.forEach { item ->
             BottomNavigationItem(
-                icon = { Icon(painter = painterResource(id = item.iconResId), contentDescription = item.title) },
+                icon = {
+                    BadgedBox(
+                        badge=  {
+                            if(isFilter.value && item.route == "movies"){
+                                Badge()
+                            }
+                        }
+                    ) {
+                        Icon(painter = painterResource(id = item.iconResId), contentDescription = item.title)
+                    }
+                },
                 label = { Text(item.title) },
                 selected = currentDestination == item.route,
                 onClick = {

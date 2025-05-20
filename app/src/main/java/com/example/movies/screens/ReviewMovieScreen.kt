@@ -1,150 +1,148 @@
 package com.example.movies.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.movies.model.Movie
+import com.example.movies.model.MovieDisplayModel
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReviewMovieScreen(movie: Movie, navController: NavController) {
+    val movieDisplay = MovieDisplayModel.fromMovie(movie)
 
-    if (movie != null) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFFF89224)
+                ),
+                modifier = Modifier.height(70.dp),
+                title = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 48.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = movie.title,
+                            color = Color.Black,
+                            style = MaterialTheme.typography.headlineMedium,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                },
+                navigationIcon = {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxHeight(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Назад",
+                                tint = Color.Black,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
+                .padding(paddingValues)
                 .padding(16.dp)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.Start
         ) {
             item {
-                Button(
-                    onClick = { navController.popBackStack() },
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color(0xFFF89224),
-                    ),
+                Image(
+                    painter = rememberAsyncImagePainter(movie.posterUrl),
+                    contentDescription = null,
                     modifier = Modifier
-                ) {
-                    Text(
-                        text = "Назад",
-                        color = Color.Black
-                    )
-                }
-            }
-            item {
-                Text(
-                    text = movie.title,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.fillMaxWidth()
+                        .fillMaxWidth()
+                        .size(400.dp)
                 )
                 Spacer(modifier = Modifier.height(24.dp))
             }
             item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    contentAlignment = Alignment.Center
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Image(
-                        painter = rememberAsyncImagePainter(movie.posterUrl),
-                        contentDescription = null,
-                        modifier = Modifier.size(400.dp)
+                    Text(
+                        text = "${movieDisplay.premiereText}, ${movieDisplay.genreText}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.DarkGray
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = movieDisplay.durationText,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.DarkGray
                     )
                 }
                 Spacer(modifier = Modifier.height(24.dp))
             }
             item {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "${movie.premiere} г., ${movie.genre.joinToString(", ")}",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color.DarkGray
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = "${movie.countries.joinToString(", ")}, ${movie.duration} мин.",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color.DarkGray
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(24.dp))
-
                 Text(
-                    text = "Описание фильма \"${movie.title}\"", fontSize = 24.sp,
+                    text = "Описание фильма \"${movie.title}\"",
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                 )
                 Spacer(modifier = Modifier.height(12.dp))
-
                 Text(
-                    text = movie.description,
+                    text = movieDisplay.descriptionText,
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Spacer(modifier = Modifier.height(24.dp))
-
-                if (movie.director.isNotEmpty()) {
-                    androidx.compose.material3.Text(
-                        text = "Режиссер: ${movie.director.joinToString(", ")}",
+            }
+            item {
+                movieDisplay.directorText?.let { director ->
+                    Text(
+                        text = director,
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
 
-                if (movie.starring.isNotEmpty()) {
-                    androidx.compose.material3.Text(
-                        text = "В ролях: ",
+                if (movieDisplay.starringText.isNotEmpty()) {
+                    Text(
+                        text = "В ролях:",
                         style = MaterialTheme.typography.bodyLarge,
                     )
 
                     Column(
                         modifier = Modifier.padding(8.dp)
                     ) {
-                        movie.starring.forEach { actor ->
+                        movieDisplay.starringText.forEach { actor ->
                             Text(
                                 text = actor,
                                 style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier
-                                    .padding(vertical = 4.dp)
+                                modifier = Modifier.padding(vertical = 4.dp)
                             )
                         }
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
             }
-
         }
-    } else {
-        Text(text = "Фильм не найден", style = MaterialTheme.typography.bodyMedium)
     }
 }
-
-
-
-
-

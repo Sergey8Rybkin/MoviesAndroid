@@ -1,11 +1,7 @@
 package com.example.movies.screens
 
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,80 +13,119 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
+import com.example.movies.data.model.MovieEntity
+import com.example.movies.model.FavoriteViewModel
+import com.example.movies.model.Movie
 import com.example.movies.model.MovieViewModel
-
+import com.example.movies.ui.theme.components.LoadingScreen
 
 @Composable
 fun ListScreen(viewModel: MovieViewModel, onMovieClick: (Long) -> Unit) {
     val state = viewModel.viewState
-    val isConnected = checkInternetConnection(LocalContext.current)
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
 
-    if (!isConnected) {
-        NoInternetScreen { viewModel.loadMovies() }
-    } else {
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(state.items) { movie ->
-                ListItem(
-                    modifier = Modifier
-                        .clickable { onMovieClick(movie.id) }
-                        .padding(8.dp),
-                    headlineContent = {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Image(
-                                painter = rememberAsyncImagePainter(movie.posterUrl),
-                                contentDescription = null,
-                                modifier = Modifier.size(150.dp)
-                            )
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Column {
-                                Text(movie.title, style = MaterialTheme.typography.titleLarge)
-                                Text(
-                                    movie.description.take(100) + "...",
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                            }
-                        }
-                    }
-                )
+        state.error?.let {
+            Text(text = it)
+            Spacer(modifier = Modifier.height(18.dp))
+            Button(onClick = { viewModel.loadMovies(type = "movie", contentStatus = "popular") }) {
+                Text("Попробовать снова")
+            }
+
+        }
+
+        LazyColumn(
+            Modifier.fillMaxSize(),
+        ) {
+            items(state.items) {
+                ConstructorItem(movie = it, onMovieClick)
             }
         }
     }
-}
 
-@Composable
-fun NoInternetScreen(onRetryClick: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = "Отсутствует интернет-соединение", style = MaterialTheme.typography.titleLarge)
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = onRetryClick) {
-            Text(text = "обновить")
-        }
+    if (state.loading) {
+        LoadingScreen()
     }
 }
 
+
 @Composable
-fun checkInternetConnection(context: Context): Boolean {
-    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    val activeNetwork = connectivityManager.activeNetwork ?: return false
-    val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
-    return networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+private fun ConstructorItem(movie: Movie, onMovieClick: (Long) -> Unit) {
+    val favoriteViewMovie: FavoriteViewModel = viewModel()
+    val isFavorite = favoriteViewMovie.favoriteMovieList.any { it.id.toLong() == movie.id }
+    ListItem(modifier = Modifier
+        .clickable { onMovieClick(movie.id) }
+        .padding(8.dp)
+        .shadow(10.dp)
+        .clip(
+            RoundedCornerShape(10.dp)
+        ), headlineContent = {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(movie.posterUrl),
+                contentDescription = null,
+                modifier = Modifier.size(170.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Column (
+                modifier = Modifier.weight(1f)
+            ){
+                Text(movie.title, style = MaterialTheme.typography.titleLarge)
+                Text(
+                    movie.description.take(80) + "...",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+            IconButton(
+                onClick = {
+                    val movieEntity = MovieEntity(
+                        id=movie.id.toString(),
+                        title=movie.title,
+                        genres = movie.genre.joinToString(", "),
+                        imageUrl = movie.posterUrl,
+                        year = movie.premiere,
+                        country = movie.countries.joinToString(", "),
+                        description = movie.description,
+                    )
+                    if (isFavorite) {
+                        favoriteViewMovie.removeMovieFromFavorite(movieEntity)
+                    } else {
+                        favoriteViewMovie.addMovieToFavorite(movieEntity, movie.posterUrl)
+                    }
+                },
+                modifier = Modifier.size(36.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Star,
+                    contentDescription = null,
+                    tint = if (isFavorite) Color(0xFFF89224) else Color.LightGray,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+    })
 }

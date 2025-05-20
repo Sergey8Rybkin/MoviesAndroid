@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-parcelize")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -19,6 +20,10 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+
+        val movieApiKey: String = project.findProperty("MOVIE_API_KEY") as? String ?: "P6VNCMX-Z4J4CM1-HWZPCDA-GS3G2JY"
+        buildConfigField("String", "MOVIE_API_KEY", "\"$movieApiKey\"")
     }
 
     buildTypes {
@@ -39,6 +44,8 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -48,11 +55,28 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    buildToolsVersion = "34.0.0"
 }
 
 dependencies {
+    val room_version = "2.6.1"
+
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.rxjava2)
+    implementation(libs.androidx.room.rxjava3)
+    implementation(libs.androidx.room.guava)
+    testImplementation(libs.androidx.room.testing)
+    implementation(libs.androidx.room.paging)
+    implementation(libs.koin.android)
+    implementation(libs.androidx.datastore.core.android)
+    implementation (libs.androidx.datastore.preferences)
+    implementation (libs.androidx.datastore.preferences.rxjava2)
+    implementation (libs.androidx.datastore.preferences.rxjava3)
     implementation(libs.javax.inject)
-    implementation (libs.kotlinx.coroutines.android.v164)
+    implementation(libs.kotlinx.coroutines.android.v164)
     implementation(libs.alignment)
     implementation(libs.koin.androidx.compose)
     implementation(libs.koin.core)
@@ -63,22 +87,22 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.koin.android)
     implementation(libs.glide)
-    implementation (libs.gson)
+    implementation(libs.gson)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
-    implementation (libs.androidx.navigation.compose)
-    implementation (libs.androidx.lifecycle.viewmodel.compose)
-    implementation (libs.androidx.material)
-    implementation (libs.ui)
-    implementation (libs.ui.tooling)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.material)
+    implementation(libs.ui)
+    implementation(libs.ui.tooling)
     implementation(libs.coil.compose)
-    implementation (libs.androidx.lifecycle.viewmodel.ktx)
-    implementation (libs.androidx.lifecycle.livedata.ktx)
-    implementation (libs.androidx.lifecycle.runtime.ktx.v251)
-    implementation (libs.kotlinx.coroutines.android)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx.v251)
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.ui.tooling.preview)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
