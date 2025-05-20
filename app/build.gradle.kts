@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -50,6 +51,17 @@ android {
 }
 
 dependencies {
+    implementation(libs.javax.inject)
+    implementation (libs.kotlinx.coroutines.android.v164)
+    implementation(libs.alignment)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.core)
+    implementation(libs.androidx.lifecycle.viewmodel.compose.v287)
+    implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.converter.gson)
+    implementation(libs.kotlin.parcelize.runtime)
+    implementation(libs.retrofit)
+    implementation(libs.koin.android)
     implementation(libs.glide)
     implementation (libs.gson)
     implementation(libs.androidx.core.ktx)

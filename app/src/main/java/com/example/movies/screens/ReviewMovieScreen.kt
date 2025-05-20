@@ -2,6 +2,7 @@ package com.example.movies.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,23 +18,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.movies.model.MovieViewModel
+import com.example.movies.model.Movie
 
 
 @Composable
-fun ReviewMovieScreen(movieId: Int, navController: NavController, viewModel: MovieViewModel = viewModel()) {
-    val movie = viewModel.movies.find { it.id == movieId }
+fun ReviewMovieScreen(movie: Movie, navController: NavController) {
 
     if (movie != null) {
         LazyColumn(
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxSize(),
-            horizontalAlignment = Alignment.Start // Выравнивание элементов по левому краю
+            horizontalAlignment = Alignment.Start
         ) {
             item {
                 Button(
@@ -53,7 +54,7 @@ fun ReviewMovieScreen(movieId: Int, navController: NavController, viewModel: Mov
                 Text(
                     text = movie.title,
                     style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.fillMaxWidth() // Занимает всю ширину
+                    modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(24.dp))
             }
@@ -61,35 +62,80 @@ fun ReviewMovieScreen(movieId: Int, navController: NavController, viewModel: Mov
                 Box(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    contentAlignment = Alignment.Center // Центрирование содержимого в Box
+                    contentAlignment = Alignment.Center
                 ) {
                     Image(
                         painter = rememberAsyncImagePainter(movie.posterUrl),
                         contentDescription = null,
-                        modifier = Modifier.size(400.dp) // Размер изображения
+                        modifier = Modifier.size(400.dp)
                     )
                 }
                 Spacer(modifier = Modifier.height(24.dp))
             }
             item {
-                Text(text = "Описание: " + movie.description, style = MaterialTheme.typography.bodyLarge)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Премьера: " + movie.premiere, style = MaterialTheme.typography.bodyLarge)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Страна: " + movie.country, style = MaterialTheme.typography.bodyLarge)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Жанр: " + movie.genre, style = MaterialTheme.typography.bodyLarge)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Режиссер: " + movie.director, style = MaterialTheme.typography.bodyLarge)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "В ролях: " + movie.starring, style = MaterialTheme.typography.bodyLarge)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Продолжительность: " + movie.duration, style = MaterialTheme.typography.bodyLarge)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Возраст: " + movie.age, style = MaterialTheme.typography.bodyLarge)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Рейтинг MPAA: " + movie.mpaa, style = MaterialTheme.typography.bodyLarge)
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "${movie.premiere} г., ${movie.genre.joinToString(", ")}",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.DarkGray
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(
+                            text = "${movie.countries.joinToString(", ")}, ${movie.duration} мин.",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.DarkGray
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = "Описание фильма \"${movie.title}\"", fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = movie.description,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+
+                if (movie.director.isNotEmpty()) {
+                    androidx.compose.material3.Text(
+                        text = "Режиссер: ${movie.director.joinToString(", ")}",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+
+                if (movie.starring.isNotEmpty()) {
+                    androidx.compose.material3.Text(
+                        text = "В ролях: ",
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+
+                    Column(
+                        modifier = Modifier.padding(8.dp)
+                    ) {
+                        movie.starring.forEach { actor ->
+                            Text(
+                                text = actor,
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier
+                                    .padding(vertical = 4.dp)
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
         }

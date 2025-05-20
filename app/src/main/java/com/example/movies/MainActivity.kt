@@ -3,6 +3,7 @@ package com.example.movies
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
@@ -19,14 +20,18 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.movies.model.Movie
+import com.example.movies.model.MovieViewModel
 import com.example.movies.screens.HomeScreen
 import com.example.movies.screens.ReviewMovieScreen
 import com.example.movies.screens.ListScreen
 import com.example.movies.screens.SettingsScreen
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContent {
             MainScreen()
         }
@@ -37,13 +42,15 @@ class MainActivity : ComponentActivity() {
 fun MainScreen() {
     val navController = rememberNavController()
     var currentDestination by remember { mutableStateOf("movies") }
-
+    val viewModel = koinViewModel<MovieViewModel>()
+    val state = viewModel.viewState
+    viewModel.viewState.error?.let {
+        Text(text = it)
+    }
     Scaffold(
         bottomBar = {
-            // Показываем нижнюю навигацию, если текущая цель не "movie_detail"
             if (!currentDestination.startsWith("movie_detail")) {
                 BottomNavigationBar(navController = navController, currentDestination = currentDestination) {
-                    // Обновляем текущую выбранную навигацию
                     currentDestination = it
                 }
             }
@@ -51,17 +58,23 @@ fun MainScreen() {
     ) { innerPadding ->
         NavHost(navController = navController, startDestination = "movies", Modifier.padding(innerPadding)) {
             composable("movies") {
-                // Сбрасываем currentDestination на "movies" при заходе на экран списка фильмов
                 currentDestination = "movies"
-                ListScreen { movieId ->
+                ListScreen(viewModel) { movieId ->
                     navController.navigate("movie_detail/$movieId") {
                     }
                 }
             }
             composable("movie_detail/{movieId}") { backStackEntry ->
-                val movieId = backStackEntry.arguments?.getString("movieId")?.toInt() ?: 0
+                backStackEntry.arguments?.getString("movieId")?.toLong() ?: 0
                 currentDestination = "movie_detail"
-                ReviewMovieScreen(movieId, navController)
+                val id = backStackEntry.arguments?.getString("movieId")?.toLong()?: 0L
+
+                val movie: Movie? = id.let {
+                    state.items.find { it.id == id }
+                }
+                if (movie != null) {
+                    ReviewMovieScreen(movie = movie, navController = navController)
+                }
             }
 
             composable("home") {
@@ -90,7 +103,7 @@ fun BottomNavigationBar(navController: NavController, currentDestination: String
         )
 
         items.forEach { item ->
-            BottomNavigationItem(   
+            BottomNavigationItem(
                 icon = { Icon(painter = painterResource(id = item.iconResId), contentDescription = item.title) },
                 label = { Text(item.title) },
                 selected = currentDestination == item.route,
