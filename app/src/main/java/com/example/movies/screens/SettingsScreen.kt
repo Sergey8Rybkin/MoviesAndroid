@@ -35,12 +35,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.movies.data.datastore.DataStoreManager
 import com.example.movies.data.datastore.SettingsData
+import com.example.movies.model.MovieViewModel
 import com.example.movies.utils.LocalUtils.contentStatus
 import com.example.movies.utils.LocalUtils.types
 import kotlinx.coroutines.launch
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(viewModel : MovieViewModel) {
     val context = LocalContext.current
     val dataStoreManager = DataStoreManager(context)
 
@@ -80,6 +81,7 @@ fun SettingsScreen() {
                             dataStoreManager.saveSettings(
                                 SettingsData(selectedType, selectedStatus)
                             )
+                            viewModel.updateFilters(selectedType, selectedStatus)
                         }
                     }
 

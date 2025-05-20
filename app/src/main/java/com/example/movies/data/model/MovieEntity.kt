@@ -9,7 +9,7 @@ data class MovieEntity(
     val title: String = "",
     val genres: String = "",
     val imageUrl: String = "",
-    val year: Int = 0,
+    val year: String = 0.toString(),
     val country: String = "",
     val description: String = "",
     val imageBytes: ByteArray? = null

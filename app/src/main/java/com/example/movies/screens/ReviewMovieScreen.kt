@@ -16,13 +16,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.movies.model.Movie
-import com.example.movies.model.MovieDisplayModel
+import com.example.movies.presentation.model.MovieUiModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReviewMovieScreen(movie: Movie, navController: NavController) {
-    val movieDisplay = MovieDisplayModel.fromMovie(movie)
+fun ReviewMovieScreen(movie: MovieUiModel, navController: NavController) {
+    if (movie == null) {
+        Text(
+            text = "Информация о фильме недоступна",
+            modifier = Modifier
+                .fillMaxSize()
+                .wrapContentSize(Alignment.Center),
+            color = Color.Red,
+            style = MaterialTheme.typography.bodyLarge
+        )
+        return
+    }
 
     Scaffold(
         topBar = {
@@ -88,34 +97,36 @@ fun ReviewMovieScreen(movie: Movie, navController: NavController) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "${movieDisplay.premiereText}, ${movieDisplay.genreText}",
+                        text = "${movie.premiere}, ${movie.genre}",
                         style = MaterialTheme.typography.bodyLarge,
                         color = Color.DarkGray
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = movieDisplay.durationText,
+                        text = movie.duration,
                         style = MaterialTheme.typography.bodyLarge,
                         color = Color.DarkGray
                     )
                 }
                 Spacer(modifier = Modifier.height(24.dp))
             }
-            item {
-                Text(
-                    text = "Описание фильма \"${movie.title}\"",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = movieDisplay.descriptionText,
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Spacer(modifier = Modifier.height(24.dp))
+            if(movie.description.isNotEmpty()){
+                item {
+                    Text(
+                        text = "Описание фильма \"${movie.title}\"",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = movie.description,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
             }
             item {
-                movieDisplay.directorText?.let { director ->
+                movie.director?.let { director ->
                     Text(
                         text = director,
                         style = MaterialTheme.typography.bodyLarge
@@ -123,7 +134,7 @@ fun ReviewMovieScreen(movie: Movie, navController: NavController) {
                 }
                 Spacer(modifier = Modifier.height(8.dp))
 
-                if (movieDisplay.starringText.isNotEmpty()) {
+                if (movie.starring.isNotEmpty()) {
                     Text(
                         text = "В ролях:",
                         style = MaterialTheme.typography.bodyLarge,
@@ -132,7 +143,7 @@ fun ReviewMovieScreen(movie: Movie, navController: NavController) {
                     Column(
                         modifier = Modifier.padding(8.dp)
                     ) {
-                        movieDisplay.starringText.forEach { actor ->
+                        movie.starring.forEach { actor ->
                             Text(
                                 text = actor,
                                 style = MaterialTheme.typography.bodyLarge,

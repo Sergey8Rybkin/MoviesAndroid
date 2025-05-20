@@ -1,15 +1,20 @@
 package com.example.movies
 
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigation
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material3.*
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,12 +27,14 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.movies.model.Movie
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.movies.model.MovieViewModel
+import com.example.movies.presentation.profile.screen.EditProfileScreen
+import com.example.movies.presentation.profile.screen.ProfileScreen
 import com.example.movies.screens.FavoriteScreen
 import com.example.movies.screens.HomeScreen
-import com.example.movies.screens.ReviewMovieScreen
 import com.example.movies.screens.ListScreen
+import com.example.movies.screens.ReviewMovieScreen
 import com.example.movies.screens.SettingsScreen
 import com.example.movies.utils.LocalUtils.isFilter
 import org.koin.androidx.compose.koinViewModel
@@ -70,10 +77,13 @@ fun MainScreen() {
             }
             composable("movie_detail/{movieId}") { backStackEntry ->
                 val id = backStackEntry.arguments?.getString("movieId")?.toLong() ?: 0L
-                val movie: Movie? = viewModel.getMovieById(id)
+                val pagingItems = viewModel.pagedMovies.collectAsLazyPagingItems()
+                val movie = (0 until pagingItems.itemCount)
+                    .mapNotNull { index -> pagingItems[index] }
+                    .find { it.id == id }
 
                 if (movie != null) {
-                    ReviewMovieScreen(movie = movie, navController = navController)
+                    ReviewMovieScreen(movie, navController)
                 }
             }
 
@@ -83,11 +93,19 @@ fun MainScreen() {
             }
             composable("settings") {
                 currentDestination = "settings"
-                SettingsScreen()
+                SettingsScreen(viewModel)
             }
             composable("favorites"){
                 currentDestination = "favorites"
                 FavoriteScreen(navController)
+            }
+            composable("profile"){
+                currentDestination = "profile"
+                ProfileScreen(navController)
+            }
+            composable("edit"){
+                currentDestination = "edit"
+                EditProfileScreen(navController)
             }
         }
     }
@@ -97,13 +115,15 @@ fun MainScreen() {
 fun BottomNavigationBar(navController: NavController, currentDestination: String, onDestinationChanged: (String) -> Unit) {
     BottomNavigation(
         backgroundColor = Color(0xFFF89224),
-        contentColor = Color(0xFF000000)
+        contentColor = Color(0xFF000000),
+        modifier = Modifier.navigationBarsPadding()
     ) {
         val items = listOf(
             BottomNavItem("Home", "home", R.drawable.home),
             BottomNavItem("Movies", "movies", R.drawable.list),
             BottomNavItem("favorites", "favorites", R.drawable.favorite),
             BottomNavItem("Settings", "settings", R.drawable.settings),
+            BottomNavItem("profile", "profile", R.drawable.profile),
         )
 
         items.forEach { item ->
