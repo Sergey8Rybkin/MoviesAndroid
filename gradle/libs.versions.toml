@@ -30,6 +30,7 @@ protobufJavalite = "4.29.0-RC3"
 protobufKotlinLite = "4.29.0-RC3"
 retrofit = "2.11.0"
 roomRuntime = "2.6.1"
+threetenabp = "1.4.7"
 ui = "1.7.5"
 uiTooling = "1.7.5"
 
@@ -86,6 +87,7 @@ kotlinx-coroutines-android-v164 = { module = "org.jetbrains.kotlinx:kotlinx-coro
 protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.ref = "protobufJavalite" }
 protobuf-kotlin-lite = { module = "com.google.protobuf:protobuf-kotlin-lite", version.ref = "protobufKotlinLite" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+threetenabp = { module = "com.jakewharton.threetenabp:threetenabp", version.ref = "threetenabp" }
 ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "uiTooling" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }

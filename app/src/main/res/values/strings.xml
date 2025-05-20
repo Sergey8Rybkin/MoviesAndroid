@@ -7,4 +7,6 @@
     <string name="name">ФИО</string>
     <string name="link">ссылка на резюме</string>
     <string name="edit">Редактирование</string>
+    <string name="notifications_channel_id">notifications_channel</string>
+    <string name="notifications_channel_name">Напоминание</string>
 </resources>

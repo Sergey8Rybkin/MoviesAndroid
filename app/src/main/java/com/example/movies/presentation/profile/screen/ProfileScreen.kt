@@ -91,7 +91,7 @@ fun ProfileScreen(navController: NavHostController)  {
             Text(text = "Самый лучший пользователь", style = MaterialTheme.typography.bodyMedium)
             Button(onClick = {
                 enqueueDownloadRequest(
-                    "https://blankum.ru/download/resume1.pdf",
+                    state.url,
                     context
                 )
             }) {
@@ -119,6 +119,7 @@ private fun enqueueDownloadRequest(
     val request: DownloadManager.Request = DownloadManager.Request(Uri.parse(url))
     with(request) {
         setTitle("Test pdf")
+        setMimeType("pdf")
         setMimeType("application/pdf")
         setDescription("Downloading pdf...")
         setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)

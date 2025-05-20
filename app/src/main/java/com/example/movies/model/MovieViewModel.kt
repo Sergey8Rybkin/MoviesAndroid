@@ -81,16 +81,6 @@ class MovieViewModel(
         }
     }
 
-    /*fun loadMovies(type: String, contentStatus: String) {
-        viewModelScope.launch(exceptionHandler) {
-            mutableState.error = null
-            val movies = repository.getMovie(type, contentStatus)
-            mutableState.items = movies.map{uiMapper.mapMovie(it)}
-
-        }
-    }*/
-
-
     private class MutableListState : ListState {
         override var searchName: String by mutableStateOf(DEFAULT_SEARCH_NAME)
         override var filterContentStatus: String by mutableStateOf(DEFAULT_CONTENT_STATUS)

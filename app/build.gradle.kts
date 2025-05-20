@@ -81,12 +81,14 @@ android {
 dependencies {
 
 
+    implementation(libs.androidx.espresso.core)
     val paging_version = "3.2.0"
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.paging.compose)
 
     val room_version = "2.6.1"
 
+    implementation(libs.threetenabp)
     implementation(libs.androidx.datastore)
     implementation(libs.protobuf.kotlin.lite)
     implementation(libs.protobuf.javalite)

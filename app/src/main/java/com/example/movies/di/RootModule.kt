@@ -15,6 +15,7 @@ import com.example.movies.data.repository.ProfileRepository
 import com.example.movies.domain.IProfileRepository
 import com.example.movies.model.EditProfileViewModel
 import com.example.movies.model.ProfileViewModel
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 
 
@@ -28,5 +29,5 @@ val rootModule = module {
     single { DataStoreManager(get()) }
     viewModel { MovieViewModel(get(), get(), get()) }
     viewModel { ProfileViewModel(get()) }
-    viewModel { EditProfileViewModel(get()) }
+    viewModel { EditProfileViewModel(get(), it.get(), androidContext()) }
 }
